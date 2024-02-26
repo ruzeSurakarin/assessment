@@ -1,0 +1,34 @@
+version: '3'
+
+networks:
+  local_network:
+
+services:
+  task:
+    image: amazoncorretto:17.0.9-alpine3.18
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/lottery
+      DATABASE_USER: user
+      DATABASE_PASS: password
+    ports:
+      - "8888:8080"
+    depends_on:
+      - postgres
+    networks:
+      - local_network
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: lottery
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - local_network
+
+volumes:
+  pgdata:
